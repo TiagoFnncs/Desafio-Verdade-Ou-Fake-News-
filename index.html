@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>60+ DIGITAL</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app-root" class="app-root">
+    <!-- Splash / abertura -->
+    <section id="screen-splash" class="screen screen-active" aria-label="Tela de abertura">
+      <div class="splash-container new-splash">
+        <div class="splash-top">
+          <div class="splash-circle" aria-hidden="true">
+            <div class="splash-quotes">“ ”</div>
+          </div>
+        </div>
+        <div class="splash-title">60+ Digital</div>
+        <div class="splash-subtitle">Tecnologia simples, segura e feita para você.</div>
+
+        <button class="btn-special" aria-hidden="true">
+          <span class="btn-special-emojis">👵🧓 📱</span>
+          <span class="btn-special-text">Aprenda a usar o celular com facilidade!</span>
+        </button>
+
+        <button class="btn-primary btn-large splash-button" data-nav="avatar" id="splash-start">
+          Começar
+        </button>
+
+        <button id="splash-tts-toggle" class="btn-tts" aria-pressed="true">
+          Ativar leitura por voz
+        </button>
+
+        <div class="splash-footer">
+          Criado para pessoas 60+ com foco em inclusão digital, autonomia e segurança.
+        </div>
+      </div>
+    </section>
+
+    <!-- Seleção do avatar / voz da IA -->
+    <section id="screen-avatar" class="screen" aria-label="Escolher voz da assistente">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="splash" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Escolha sua companhia</h1>
+      </div>
+      <div class="screen-content">
+        <p class="screen-text">
+          Quem você quer que ajude você no celular?
+        </p>
+        <div class="avatar-options">
+          <button class="avatar-card" data-avatar="gracinha">
+            <div class="avatar-icon avatar-female">👵</div>
+            <div class="avatar-info">
+              <div class="avatar-name">Gracinha</div>
+              <div class="avatar-desc">Voz feminina, calma e acolhedora.</div>
+            </div>
+          </button>
+          <button class="avatar-card" data-avatar="ze">
+            <div class="avatar-icon avatar-male">👴</div>
+            <div class="avatar-info">
+              <div class="avatar-name">Zé</div>
+              <div class="avatar-desc">Voz masculina, paciente e amiga.</div>
+            </div>
+          </button>
+        </div>
+        <button id="avatar-continuar" class="btn-primary btn-large" disabled>
+          Continuar
+        </button>
+      </div>
+    </section>
+
+    <!-- NEW: Informative screen shown only when user selects Zé -->
+    <section id="screen-avatar-ze" class="screen" aria-label="Bem-vindo ao Zé" style="overflow-y:auto; -webkit-overflow-scrolling:touch;">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="avatar" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Olá, sou o Zé</h1>
+      </div>
+      <div class="screen-content" style="padding:24px;">
+        <p class="screen-text" style="font-size:20px; line-height:1.6; margin-bottom:12px;">
+          Você pode falar comigo a qualquer momento, dizendo “Oi Zé”.
+        </p>
+        <p class="screen-text" style="font-size:18px; color:#555; margin-bottom:18px;">
+          Use sua voz para pedir ajuda rápida ou perguntar sobre mensagens e links. Se quiser, toque em continuar para permitir que seu assistente ajude no celular.
+        </p>
+
+        <div style="display:flex; gap:12px; flex-direction:column;">
+          <button id="avatar-ze-continue" class="btn-primary btn-large" data-nav="permission">Continuar</button>
+          <button id="avatar-ze-skip" class="btn-secondary btn-large" data-nav="home">Pular</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tela de autorização para IA operar o celular -->
+    <section id="screen-permission" class="screen" aria-label="Permitir ajuda no celular">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="avatar" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Permitir ajuda</h1>
+      </div>
+      <div class="screen-content">
+        <p class="screen-text" id="permission-text">
+          Permitir que sua assistente ajude você a usar o celular?
+        </p>
+        <ul class="bullet-list">
+          <li>Abrir aplicativos (WhatsApp, YouTube, Contatos)</li>
+          <li>Ler e responder mensagens simples</li>
+          <li>Fazer ligações para contatos salvos</li>
+          <li>Ajustar brilho e volume</li>
+          <li>Guiar você passo a passo na tela</li>
+        </ul>
+        <div class="permission-actions">
+          <button class="btn-secondary btn-large" data-nav="home">
+            Agora não
+          </button>
+          <button class="btn-primary btn-large" data-nav="home" id="permission-allow">
+            Sim, pode ajudar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Página inicial da assistente -->
+    <section id="screen-home" class="screen" aria-label="Página inicial da assistente">
+      <div class="screen-header">
+        <div class="header-avatar">
+          <span id="header-avatar-emoji" class="header-avatar-emoji">👵</span>
+          <div class="header-avatar-text">
+            <div class="header-greeting">Olá!</div>
+            <div id="header-avatar-name" class="header-helper-name">Eu sou a Gracinha.</div>
+          </div>
+        </div>
+        <button class="btn-ghost header-icon" data-nav="accessibility" aria-label="Acessibilidade">
+          🅰️
+        </button>
+      </div>
+
+      <!-- START: Make home an independent scrollable page: wrap rest of content in a scroll container -->
+      <div class="screen-body">
+        <div class="screen-content home-content">
+          <div class="home-main-actions">
+            <button class="btn-primary btn-giant" data-nav="chat-voice">
+              🎤 Falar com a IA
+            </button>
+            <button class="btn-secondary btn-giant" data-nav="chat-text">
+              ✍️ Escrever para a IA
+            </button>
+          </div>
+
+          <!-- MOVED: Avisos importantes moved up for prominence -->
+          <div class="home-section">
+            <div class="section-title">Avisos importantes</div>
+            <div class="alert-card" data-nav="alerts">
+              ⚠️ Cuidado com mensagens pedindo código ou dinheiro. Toque aqui para ver exemplos.
+            </div>
+          </div>
+
+          <div class="home-section">
+            <div class="assistant-quick">
+              <div class="assistant-header">
+                <div class="assistant-title">Assistente Rápida</div>
+                <div class="assistant-sub">Ações rápidas para segurança, aprendizado e conexão</div>
+              </div>
+
+              <!-- 1. Segurança Digital (PRIORIDADE MÁXIMA) -->
+              <div class="category security-block" aria-label="Segurança Digital • Proteção e Confiança">
+                <div class="category-title">Segurança Digital • Proteção e Confiança</div>
+
+                <!-- nova lista vertical: um botão por linha -->
+                <div class="security-list">
+                  <button class="security-item" data-nav="fake-detector">
+                    <div class="card-icon">🌐</div>
+                    <div class="card-text">Checar notícia</div>
+                  </button>
+
+                  <button class="security-item" data-quick="bloquear-links" data-nav="block-links">
+                    <div class="card-icon">🚫</div>
+                    <div class="card-text">Bloquear links suspeitos</div>
+                  </button>
+
+                  <button class="security-item" data-nav="alerts">
+                    <div class="card-icon">🔔</div>
+                    <div class="card-text">Alertas de risco</div>
+                  </button>
+
+                  <button class="security-item" data-nav="fake-library">
+                    <div class="card-icon">🗃️</div>
+                    <div class="card-text">Biblioteca de Fake News</div>
+                  </button>
+
+                  <button class="security-item" data-nav="game-share">
+                    <div class="card-icon">🕹️</div>
+                    <div class="card-text">Jogo: Você compartilharia?</div>
+                  </button>
+                </div>
+              </div>
+              <div class="category-sep" aria-hidden="true"></div>
+
+              <!-- 2. Letramento Digital e Aprendizado Guiado -->
+              <div class="category">
+                <div class="category-title">Aprender e Usar Melhor o Celular</div>
+                <div class="assistant-grid">
+                  <button class="assistant-card" data-nav="educativos" data-quick="microaulas">
+                    <div class="card-icon">🎧</div>
+                    <div class="card-text">Microaulas 3–5 min</div>
+                  </button>
+                  <button class="assistant-card" data-nav="see-screen">
+                    <div class="card-icon">👁️</div>
+                    <div class="card-text">IA enxerga a tela</div>
+                  </button>
+                  <button class="assistant-card assistant-card--large" data-quick="guia-passo">
+                    <div class="card-icon">👉</div>
+                    <div class="card-text">Guia passo a passo</div>
+                  </button>
+                </div>
+              </div>
+              <div class="category-sep" aria-hidden="true"></div>
+
+              <!-- 3. Autonomia Digital • Ações que a IA faz por você -->
+              <div class="category">
+                <div class="category-title">Autonomia Digital • Ações que a IA faz por você</div>
+                <div class="assistant-grid single-column-grid">
+                  <button class="assistant-card" data-quick="ler-mensagens">
+                    <div class="card-icon">📖</div>
+                    <div class="card-text">Ler mensagens</div>
+                  </button>
+                  <button class="assistant-card" data-quick="whatsapp">
+                    <div class="card-icon">💬</div>
+                    <div class="card-text">Abrir WhatsApp</div>
+                  </button>
+                  <button class="assistant-card" data-quick="enviar-pre">
+                    <div class="card-icon">✉️</div>
+                    <div class="card-text">Enviar mensagem pré-definida</div>
+                  </button>
+                  <button class="assistant-card" data-quick="abrir-apps">
+                    <div class="card-icon">📱</div>
+                    <div class="card-text">Abrir aplicativos</div>
+                  </button>
+                  <button class="assistant-card" data-quick="ajustar-volume">
+                    <div class="card-icon">🔊</div>
+                    <div class="card-text">Ajustar volume</div>
+                  </button>
+                  <button class="assistant-card" data-quick="modo-silencioso">
+                    <div class="card-icon">🌙</div>
+                    <div class="card-text">Ativar silencioso</div>
+                  </button>
+                  <button class="assistant-card" data-quick="ajustar-brilho">
+                    <div class="card-icon">☀️</div>
+                    <div class="card-text">Ajustar brilho</div>
+                  </button>
+                </div>
+              </div>
+              <div class="category-sep" aria-hidden="true"></div>
+
+              <!-- 4. Participação Social e Conexão -->
+              <div class="category">
+                <div class="category-title">Participação Social • Conectar e Interagir</div>
+                <div class="assistant-grid single-column-grid">
+                  <button class="assistant-card" data-nav="community">
+                    <div class="card-icon">🤝</div>
+                    <div class="card-text">Atividades intergeracionais</div>
+                  </button>
+                  <button class="assistant-card" data-nav="educativos">
+                    <div class="card-icon">📚</div>
+                    <div class="card-text">Conteúdos educativos</div>
+                  </button>
+                  <button class="assistant-card" data-nav="community">
+                    <div class="card-icon">🎭</div>
+                    <div class="card-text">Oficinas, vídeos e interação</div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- END: screen-body scroll container -->
+
+      <nav class="bottom-nav" aria-label="Menu principal">
+        <button class="bottom-nav-btn bottom-nav-btn-active" data-nav="home">
+          🏠
+          <span>Início</span>
+        </button>
+        <button class="bottom-nav-btn" data-nav="fake-library">
+          📰
+          <span>Fake News</span>
+        </button>
+        <button class="bottom-nav-btn" data-nav="community">
+          🤝
+          <span>Comunidade</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- Chat com a IA - voz -->
+    <section id="screen-chat-voice" class="screen" aria-label="Falar com a assistente">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Falar com a assistente</h1>
+      </div>
+      <!-- New centered, modern layout for voice chat (only this screen) -->
+      <div class="screen-content chat-voice-screen" role="main">
+        <h2 class="voice-title">Falar com a Assistente</h2>
+        <p class="voice-sub">Toque e segure o botão abaixo para falar comigo.</p>
+
+        <!-- START: live transcription & response area -->
+        <div class="voice-live-wrap" id="voice-live-wrap" aria-live="polite">
+          <div id="voice-simulated-question" class="voice-simulated-text" aria-hidden="false">
+            <!-- simulated live transcription appears here while pressing -->
+          </div>
+
+          <div id="voice-response" class="voice-response" role="region" aria-label="Resposta da assistente" hidden>
+            <!-- AI response rendered here on release -->
+          </div>
+        </div>
+        <!-- END: live transcription & response area -->
+
+        <div class="voice-button-wrap">
+          <button id="btn-voice" class="voice-btn" aria-label="Pressione e segure para falar" title="Pressione e segure para falar">
+            <span class="voice-emoji" aria-hidden="true">🎙️</span>
+          </button>
+        </div>
+
+        <div class="voice-tip">Solte quando terminar de falar.</div>
+      </div>
+    </section>
+
+    <!-- Chat com a IA - texto -->
+    <section id="screen-chat-text" class="screen" aria-label="Escrever para a assistente">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Escrever para a assistente</h1>
+      </div>
+      <div class="screen-content chat-content">
+        <div class="chat-bubbles" id="chat-text-bubbles" aria-live="polite">
+          <div class="chat-bubble chat-bubble-assistant">
+            Escreva sua dúvida e eu respondo com calma.
+          </div>
+        </div>
+        <div class="chat-input-bar">
+          <input
+            id="chat-text-input"
+            type="text"
+            class="chat-input"
+            placeholder="Digite aqui..."
+          />
+          <button id="chat-text-send" class="btn-primary chat-send-btn">
+            ➤
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- IA que enxerga a tela -->
+    <section id="screen-see-screen" class="screen" aria-label="IA enxerga a tela">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">IA que enxerga a tela</h1>
+      </div>
+      <div class="screen-content">
+        <p class="screen-text">
+          Eu posso explicar o que aparece na tela do seu celular.
+        </p>
+        <div class="see-screen-questions">
+          <button class="btn-secondary btn-large see-btn" data-see="o-que">
+            O que está na minha tela?
+          </button>
+          <button class="btn-secondary btn-large see-btn" data-see="seguro">
+            Isso aqui é seguro?
+          </button>
+          <button class="btn-secondary btn-large see-btn" data-see="botao">
+            Qual botão devo apertar?
+          </button>
+          <button class="btn-secondary btn-large see-btn" data-see="explique">
+            Me explique isso.
+          </button>
+        </div>
+        <div class="see-screen-box">
+          <div class="see-section-title">Captura da tela</div>
+          <div class="see-screenshot-placeholder">
+            (Aqui aparece uma imagem da tela do seu celular.)
+          </div>
+          <div class="see-section-title">Análise da IA</div>
+          <p id="see-screen-answer" class="screen-text">
+            Toque em uma das perguntas acima para eu explicar.
+          </p>
+          <button class="btn-primary btn-large" id="see-screen-listen">
+            🔊 Ouvir explicação
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detector de Fake News -->
+    <section id="screen-fake-detector" class="screen" aria-label="Detector de Fake News">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Checar notícia</h1>
+      </div>
+      <div class="screen-content fake-detector-content">
+        <p class="screen-text fake-detector-intro">
+          Me mostre a notícia que você recebeu e eu verifico se ela é verdadeira ou falsa, de um jeito simples e rápido.
+        </p>
+
+        <!-- Illustration card -->
+        <div class="detector-card detector-illustration-card" aria-hidden="false">
+          <img src="illustration-people-check.png" alt="Ilustração de um idoso e uma idosa olhando um celular, lupa e escudo de segurança" class="detector-illustration" />
+        </div>
+
+        <div class="detector-actions-vertical">
+          <input id="fake-file-input" type="file" accept="image/*" capture="environment" hidden />
+
+          <div class="detector-card detector-action-card">
+            <button id="btn-detector-photo" class="detector-action" aria-label="Enviar foto da notícia">
+              <div class="card-icon">📷</div>
+              <div class="card-text">Enviar foto da notícia</div>
+            </button>
+            <div class="detector-sub">Tire uma foto ou escolha da galeria.</div>
+          </div>
+
+          <div class="detector-card detector-action-card">
+            <div class="card-left">
+              <div class="card-icon">🔗</div>
+            </div>
+            <div class="card-body">
+              <div style="display:flex; gap:8px; align-items:center; width:100%;">
+                <button id="btn-detector-paste" class="detector-action detector-action-inline">Colar link da notícia</button>
+              </div>
+              <input id="fake-link-input" class="detector-input" type="url" placeholder="Cole o link recebido aqui" />
+              <div class="detector-sub">Cole o link recebido para eu verificar.</div>
+            </div>
+          </div>
+
+          <!-- Modern recording card -->
+          <div id="rec-card" class="detector-record-card">
+            <div class="detector-record-body">
+              <div class="detector-record-left">
+                <div class="detector-record-title">🎤 Ler notícia em voz alta</div>
+                <div class="detector-record-sub">Pressione e segure para gravar sua voz. Solte para enviar.</div>
+              </div>
+              <div class="detector-record-right">
+                <button id="btn-detector-record" class="detector-record-btn" aria-label="Pressione e segure para gravar">
+                  <span class="rec-mic" aria-hidden="true">🎤</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analyze button: CTA large -->
+          <div class="detector-card">
+            <button id="btn-detector-analyze" class="detector-analyze detector-analyze--primary detector-analyze--big" aria-label="Analisar notícia">
+              <div class="card-icon">🧐</div>
+              <div class="card-text">Analisar notícia</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- What the AI will analyze: questions block -->
+        <div class="detector-card detector-questions-card" aria-live="polite">
+          <div class="see-section-title">O que vou analisar para você:</div>
+          <ul class="detector-questions-list">
+            <li><span class="q-icon">🔍</span> Essa informação tem fonte confiável?</li>
+            <li><span class="q-icon">🔍</span> O texto contém sinais comuns de golpe?</li>
+            <li><span class="q-icon">🔍</span> A imagem foi alterada digitalmente?</li>
+            <li><span class="q-icon">🔍</span> O link é seguro e verdadeiro?</li>
+            <li><span class="q-icon">🔍</span> Outros sites confiáveis estão falando sobre isso?</li>
+            <li><span class="q-icon">🔍</span> Há promessa de prêmio, dinheiro ou aviso urgente?</li>
+            <li><span class="q-icon">🔍</span> O conteúdo tenta causar medo ou pressão?</li>
+            <li><span class="q-icon">🔍</span> A notícia tem data válida ou está fora de contexto?</li>
+            <li><span class="q-icon">🔍</span> Existe manipulação emocional para forçar compartilhamento?</li>
+            <li><span class="q-icon">🔍</span> Essa mensagem já foi identificada como fake news?</li>
+          </ul>
+        </div>
+
+        <div id="fake-result-area" class="fake-result-area" hidden aria-live="polite">
+          <div class="fake-result-quick" id="fake-result-quick">Veredito: —</div>
+          <div class="fake-result-explain" id="fake-result-explain">Breve explicação aparecerá aqui.</div>
+          <div class="fake-result-tips" id="fake-result-tips">
+            <div class="see-section-title">Dicas de segurança</div>
+            <ul class="bullet-list" id="fake-result-tips-list"></ul>
+          </div>
+          <div class="fake-result-meta" id="fake-result-meta"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resultado da análise de Fake News -->
+    <section id="screen-fake-result" class="screen" aria-label="Resultado da análise de Fake News">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="fake-detector" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Resultado da notícia</h1>
+      </div>
+      <div class="screen-content">
+        <div id="fake-result-badge" class="fake-badge fake-badge-duvidoso">
+          DUVIDOSO
+        </div>
+        <p id="fake-result-text" class="screen-text">
+          Esta notícia tem sinais de exagero e pode não ser confiável.
+        </p>
+        <div class="fake-example-box">
+          <div class="see-section-title">Exemplo visual</div>
+          <p class="screen-text">
+            Mensagem com letras em MAIÚSCULO, muitos pontos de exclamação e pedindo para repassar rápido.
+          </p>
+        </div>
+        <div class="fake-tips-box">
+          <div class="see-section-title">Dicas para perceber manipulação</div>
+          <ul class="bullet-list">
+            <li>Desconfie se pedir para compartilhar “urgente”.</li>
+            <li>Veja se fala o nome de jornais ou sites conhecidos.</li>
+            <li>Nunca clique em links estranhos.</li>
+          </ul>
+        </div>
+        <button class="btn-primary btn-large" data-nav="fake-library">
+          Ver outros exemplos
+        </button>
+      </div>
+    </section>
+
+    <!-- Biblioteca de Fake News -->
+    <section id="screen-fake-library" class="screen" aria-label="Biblioteca de Fake News">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Exemplos de golpes</h1>
+      </div>
+      <div class="screen-content">
+        <!-- Strong header for examples -->
+        <div class="scam-header" role="region" aria-label="Cabeçalho Exemplos de golpes">
+          <div class="scam-header-left">🛑</div>
+          <div class="scam-header-body">
+            <div class="scam-header-title">Exemplos de golpes</div>
+            <div class="scam-header-sub">Veja exemplos comuns e como identificar sinais de golpe.</div>
+          </div>
+        </div>
+
+        <div class="scam-list" role="list">
+          <article class="scam-card scam-card-prize" role="listitem">
+            <div class="scam-icon">💰</div>
+            <div class="scam-body">
+              <div class="scam-title">Golpe do falso prêmio</div>
+              <div class="scam-text">Mensagem dizendo que você ganhou dinheiro, pedindo para clicar ou enviar dados; normalmente é fraude para obter suas informações ou pagamento.</div>
+            </div>
+          </article>
+
+          <article class="scam-card scam-card-delivery" role="listitem">
+            <div class="scam-icon">📦</div>
+            <div class="scam-body">
+              <div class="scam-title">Golpe de entrega</div>
+              <div class="scam-text">Cobra taxa para entrega de encomenda que não existe ou pede dados do cartão; confirme com o varejista ou transportadora oficial.</div>
+            </div>
+          </article>
+
+          <article class="scam-card scam-card-relative" role="listitem">
+            <div class="scam-icon">👮</div>
+            <div class="scam-body">
+              <div class="scam-title">Golpe do falso parente ou policial</div>
+              <div class="scam-text">Alguém se passa por parente ou autoridade pedindo depósito urgente; pare e confirme por outra via antes de agir.</div>
+            </div>
+          </article>
+
+          <article class="scam-card scam-card-bank" role="listitem">
+            <div class="scam-icon">🔐</div>
+            <div class="scam-body">
+              <div class="scam-title">Site falso de banco</div>
+              <div class="scam-text">Sites ou links que pedem senha, código do SMS ou dados do cartão — bancos nunca solicitam códigos por mensagem.</div>
+            </div>
+          </article>
+
+          <!-- Guidance card at the end -->
+          <div class="scam-guidance" role="note">
+            <div class="scam-guidance-icon">⚠️</div>
+            <div class="scam-guidance-body">Se alguma mensagem parecer estranha, fale comigo antes de responder.</div>
+          </div>
+        </div>
+      </div>
+      <nav class="bottom-nav">
+        <button class="bottom-nav-btn" data-nav="home">
+          🏠
+          <span>Início</span>
+        </button>
+        <button class="bottom-nav-btn bottom-nav-btn-active" data-nav="fake-library">
+          📰
+          <span>Fake News</span>
+        </button>
+        <button class="bottom-nav-btn" data-nav="community">
+          🤝
+          <span>Comunidade</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- Jogo do Compartilhar -->
+    <section id="screen-game-share" class="screen" aria-label="Jogo do Compartilhar">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="fake-library" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Jogo do Compartilhar?</h1>
+      </div>
+      <div class="screen-content game-share-content">
+        <p class="screen-text game-share-desc">
+          Eu vou te mostrar mensagens que circulam por aí. Sua missão é decidir se você compartilharia ou não. Depois, eu explico o porquê!
+        </p>
+
+        <div class="game-card game-illustration-card detector-card">
+          <img src="game-illustration.png" alt="Ilustração: idoso e idosa olhando um celular com mensagem suspeita, lupa de análise e símbolo de alerta" class="game-illustration" />
+        </div>
+
+        <div class="game-card game-message-card detector-card">
+          <div class="see-section-title">Mensagem de exemplo</div>
+          <p id="game-question" class="screen-text game-message">
+            “Você ganhou um prêmio milionário! Clique aqui rápido!!!”
+          </p>
+          <div class="game-score" id="game-score">Pontos: 0</div>
+        </div>
+
+        <div class="game-card game-actions-card">
+          <div class="game-buttons">
+            <button class="btn-primary game-btn-choice" id="game-btn-yes" aria-label="Sim eu compartilharia">
+              <span class="card-icon">👍</span>
+              <span class="card-text">SIM, eu compartilharia</span>
+            </button>
+            <button class="btn-secondary game-btn-choice" id="game-btn-no" aria-label="Não eu não compartilharia">
+              <span class="card-icon">👎</span>
+              <span class="card-text">NÃO, eu não compartilharia</span>
+            </button>
+          </div>
+
+          <div id="game-feedback" class="screen-text game-feedback" aria-live="polite">
+            O melhor é NÃO compartilhar mensagens com promessa fácil de dinheiro. Isso é um sinal comum de golpe.
+          </div>
+        </div>
+
+        <div class="game-card game-questions-card detector-card">
+          <div class="see-section-title">O que devo analisar antes de compartilhar?</div>
+          <ul class="game-questions-list">
+            <li><span class="q-ico">⚠️</span> A mensagem promete dinheiro fácil?</li>
+            <li><span class="q-ico">⚠️</span> Pede para agir rápido (‘urgente’, ‘clique agora’)?</li>
+            <li><span class="q-ico">🔍</span> Vem de um número desconhecido?</li>
+            <li><span class="q-ico">⚠️</span> Tem erros de escrita ou formatação?</li>
+            <li><span class="q-ico">🔍</span> O link parece estranho ou diferente do site oficial?</li>
+            <li><span class="q-ico">⚠️</span> Usa medo ou pressão para fazer você clicar?</li>
+            <li><span class="q-ico">🔍</span> Oferece prêmios que você nunca participou?</li>
+            <li><span class="q-ico">⚠️</span> Pede dados pessoais, senhas ou códigos?</li>
+            <li><span class="q-ico">🔍</span> A imagem ou logo parecem estranhos?</li>
+            <li><span class="q-ico">⚠️</span> Outras pessoas já denunciaram essa mensagem como golpe?</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Módulos educativos -->
+    <section id="screen-educativos" class="screen" aria-label="Conteúdos educativos">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Aprender em 3 minutos</h1>
+      </div>
+      <div class="screen-content edu-content">
+        <h2 class="edu-main-title">Aprender em 3 minutos</h2>
+        <p class="edu-subtitle">Toque em um tema para começar.</p>
+
+        <div class="edu-cards-scroll">
+          <button class="edu-card" data-edu="checar">
+            <div class="edu-card-icon" style="color:#4A90E2">🔍</div>
+            <div class="edu-card-body">
+              <div class="edu-card-title">Como checar informações</div>
+              <div class="edu-card-desc">Passos simples para conferir uma notícia.</div>
+            </div>
+          </button>
+
+          <button class="edu-card" data-edu="golpes">
+            <div class="edu-card-icon" style="color:#E05A4E">🛡️</div>
+            <div class="edu-card-body">
+              <div class="edu-card-title">Como reconhecer golpes digitais</div>
+              <div class="edu-card-desc">Exemplos do que evitar no celular.</div>
+            </div>
+          </button>
+
+          <button class="edu-card" data-edu="direitos">
+            <div class="edu-card-icon" style="color:#2E7D32">⚖️</div>
+            <div class="edu-card-body">
+              <div class="edu-card-title">Direitos da pessoa idosa</div>
+              <div class="edu-card-desc">Informações claras sobre seus direitos.</div>
+            </div>
+          </button>
+
+          <button class="edu-card" data-edu="politica">
+            <div class="edu-card-icon" style="color:#F5C451">🗳️</div>
+            <div class="edu-card-body">
+              <div class="edu-card-title">Política explicada de forma neutra</div>
+              <div class="edu-card-desc">Entenda sem briga nem confusão.</div>
+            </div>
+          </button>
+
+          <button class="edu-card" data-edu="seguranca">
+            <div class="edu-card-icon" style="color:#9B8CE0">🧩</div>
+            <div class="edu-card-body">
+              <div class="edu-card-title">Segurança e bem-estar digital</div>
+              <div class="edu-card-desc">Cuidados para usar a internet em paz.</div>
+            </div>
+          </button>
+        </div>
+
+        <div id="edu-detail" class="edu-detail">
+          <div class="see-section-title" id="edu-title">Toque em um tema para começar.</div>
+          <p id="edu-text" class="screen-text"></p>
+          <button class="btn-primary btn-large" id="edu-listen">
+            🔊 Ouvir conteúdo
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW: Detalhe: Como checar informações -->
+    <section id="screen-edu-checar" class="screen" aria-label="Como checar informações">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="educativos" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Como checar informações</h1>
+      </div>
+      <div class="screen-content" style="overflow-y:auto; -webkit-overflow-scrolling:touch;">
+        <p class="screen-text">
+          Veja como descobrir rapidamente se uma notícia é confiável.
+        </p>
+
+        <div class="detector-card" style="margin-top:8px;">
+          <img src="edu-checar.png" alt="Ilustração: lupa analisando uma notícia no celular com selo de verificação e elementos como data, link e texto destacado" style="width:100%; max-width:520px; height:auto; border-radius:12px; display:block; margin:0 auto;" />
+        </div>
+
+        <div class="detector-card" style="margin-top:12px;">
+          <div class="see-section-title">O que checar</div>
+          <ul style="text-align:left; margin-top:10px; padding-left:20px; font-size:18px; line-height:1.5;">
+            <li>Verifique a data.</li>
+            <li>Procure a mesma notícia em site confiável.</li>
+            <li>Preste atenção em erros de escrita.</li>
+            <li>Evite clicar em links suspeitos.</li>
+            <li>Veja se a imagem foi alterada.</li>
+            <li>Em dúvida, pergunte para mim antes de compartilhar.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW: Como reconhecer golpes digitais -->
+    <section id="screen-edu-golpes" class="screen" aria-label="Como reconhecer golpes digitais">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="educativos" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Como reconhecer golpes digitais</h1>
+      </div>
+      <div class="screen-content edu-golpes-content" aria-live="polite">
+        <p class="screen-text" style="font-size:20px; text-align:left; max-width:760px; margin:0 auto 12px;">
+          Aprenda a identificar sinais de golpes e proteger seu celular.
+        </p>
+
+        <div class="edu-golpes-illustration" style="max-width:560px; margin:0 auto 12px;">
+          <img src="game-illustration.png" alt="Celular recebendo mensagem suspeita, alerta vermelho, ícones de cadeado e atenção" style="width:100%; height:auto; border-radius:12px; display:block;" />
+        </div>
+
+        <div class="edu-golpes-list" style="max-width:720px; margin:0 auto; width:100%;">
+          <article class="edu-golpe-card">
+            <div class="edu-golpe-icon">🔗</div>
+            <div class="edu-golpe-body">
+              <div class="edu-golpe-title">Não clique em links desconhecidos</div>
+              <div class="edu-golpe-desc">Links estranhos podem levar a páginas falsas que pedem suas senhas ou dados.</div>
+            </div>
+          </article>
+
+          <article class="edu-golpe-card">
+            <div class="edu-golpe-icon">⚠️</div>
+            <div class="edu-golpe-body">
+              <div class="edu-golpe-title">Desconfie de mensagens alarmantes</div>
+              <div class="edu-golpe-desc">Alertas que pressionam você a agir rápido são tática comum de golpe.</div>
+            </div>
+          </article>
+
+          <article class="edu-golpe-card">
+            <div class="edu-golpe-icon">👤</div>
+            <div class="edu-golpe-body">
+              <div class="edu-golpe-title">Verifique quem enviou a mensagem</div>
+              <div class="edu-golpe-desc">Confirme por outro contato se a pessoa realmente enviou; números podem ser falsificados.</div>
+            </div>
+          </article>
+
+          <article class="edu-golpe-card">
+            <div class="edu-golpe-icon">🔐</div>
+            <div class="edu-golpe-body">
+              <div class="edu-golpe-title">Não forneça senhas ou dados pessoais</div>
+              <div class="edu-golpe-desc">Instituições confiáveis nunca pedem senhas ou códigos por mensagem.</div>
+            </div>
+          </article>
+
+          <article class="edu-golpe-card">
+            <div class="edu-golpe-icon">⬆️</div>
+            <div class="edu-golpe-body">
+              <div class="edu-golpe-title">Atualize sempre seu celular e aplicativos</div>
+              <div class="edu-golpe-desc">Atualizações corrigem falhas que golpistas podem explorar.</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW SCREEN: Direitos da pessoa idosa -->
+    <section id="screen-edu-direitos" class="screen" aria-label="Direitos da pessoa idosa">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="educativos" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">⚖️ Direitos da pessoa idosa</h1>
+      </div>
+      <div class="screen-content edu-direitos-content">
+        <p class="screen-text edu-direitos-intro">
+          Informações claras sobre seus direitos.
+        </p>
+
+        <div class="detector-card edu-direitos-illustration">
+          <img src="illustration-people-check.png" alt="Pessoa idosa sorrindo com ícones de lei e proteção ao redor — ilustração horizontal" class="edu-direitos-image" />
+        </div>
+
+        <div class="edu-direitos-list">
+          <article class="edu-direito-card">
+            <div class="edu-direito-icon">🏥</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Direito à saúde e atendimento digno</div>
+              <div class="edu-direito-desc">Toda pessoa idosa tem direito a atendimento de saúde rápido, respeitoso e sem discriminação. Isso inclui consultas, exames, medicamentos essenciais, prioridade no atendimento e profissionais preparados para oferecer cuidado humanizado. A saúde deve ser tratada como prioridade, garantindo bem-estar físico e emocional.</div>
+            </div>
+          </article>
+
+          <article class="edu-direito-card">
+            <div class="edu-direito-icon">🛡️</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Direito à segurança e proteção contra violência</div>
+              <div class="edu-direito-desc">É garantida proteção contra qualquer tipo de violência: física, verbal, psicológica, financeira ou negligência. A pessoa idosa tem direito a denunciar maus-tratos e receber apoio imediato dos serviços públicos. A sociedade e a família têm o dever de garantir um ambiente seguro e acolhedor.</div>
+            </div>
+          </article>
+
+          <article class="edu-direito-card">
+            <div class="edu-direito-icon">🗣️</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Direito à informação e participação social</div>
+              <div class="edu-direito-desc">A pessoa idosa deve receber informações claras sobre serviços públicos, direitos, benefícios e decisões que afetam sua vida. Tem direito de participar de atividades comunitárias, ser ouvida, dar opinião e ter seus desejos respeitados. Participação ativa fortalece autonomia e inclusão.</div>
+            </div>
+          </article>
+
+          <article class="edu-direito-card">
+            <div class="edu-direito-icon">🎭</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Direito ao lazer, cultura e educação</div>
+              <div class="edu-direito-desc">Toda pessoa idosa tem direito a participar de atividades culturais, esportivas, artísticas e de lazer que promovam bem-estar e socialização. Também pode estudar, fazer cursos, aprender novas habilidades e frequentar espaços públicos de cultura. O acesso deve ser garantido de forma acessível e acolhedora.</div>
+            </div>
+          </article>
+
+          <article class="edu-direito-card">
+            <div class="edu-direito-icon">🏛️</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Direito a serviços públicos de qualidade</div>
+              <div class="edu-direito-desc">A pessoa idosa tem direito a ser atendida com prioridade em serviços públicos como assistência social, previdência, transporte, programas governamentais e atendimentos municipais. Esses serviços devem ser eficientes, acessíveis e respeitar suas necessidades específicas, garantindo dignidade e autonomia.</div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW: Política explicada de forma neutra -->
+    <section id="screen-edu-politica" class="screen" aria-label="Política explicada de forma neutra">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="educativos" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">🗳️ Política explicada de forma neutra</h1>
+      </div>
+      <div class="screen-content edu-politica-content" style="overflow-y:auto; -webkit-overflow-scrolling:touch;">
+        <p class="screen-text" style="font-size:20px; margin-bottom:12px;">
+          Entenda sem briga nem confusão.
+        </p>
+
+        <div class="detector-card edu-politica-illustration" style="max-width:520px; margin:0 auto 18px;">
+          <img src="game-illustration.png" alt="Urna eletrônica estilizada com balões de diálogo e símbolos de respeito — ilustração neutra" style="width:100%; height:auto; border-radius:12px; display:block; margin:0 auto;" />
+        </div>
+
+        <div class="edu-politica-list" style="max-width:760px; margin:0 auto; display:flex; flex-direction:column; gap:14px; padding:2px;">
+
+          <article class="edu-direito-card" style="min-height:84px;">
+            <div class="edu-direito-icon">📘</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Como funcionam eleições e cargos</div>
+              <div class="edu-direito-desc">Explicação simples sobre como prefeitos, vereadores, deputados e outros cargos são escolhidos. Mostre que cada pessoa tem um papel importante e que o voto é a forma de participar das decisões da cidade e do país.</div>
+            </div>
+          </article>
+
+          <article class="edu-direito-card" style="min-height:84px;">
+            <div class="edu-direito-icon">📰</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Diferença entre notícia e opinião</div>
+              <div class="edu-direito-desc">Ajude a entender quando um texto está informando fatos e quando está apenas dando um ponto de vista. Isso evita confusão e ajuda a interpretar melhor o que aparece na TV, rádio ou redes sociais.</div>
+            </div>
+          </article>
+
+          <article class="edu-direito-card" style="min-height:84px;">
+            <div class="edu-direito-icon">⚖️</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Leis e decisões de forma simples</div>
+              <div class="edu-direito-desc">Mostre como leis são criadas, o que fazem e como afetam o dia a dia. Explique de forma direta, para que a pessoa idosa compreenda como cada decisão pública pode influenciar sua vida.</div>
+            </div>
+          </article>
+
+          <article class="edu-direito-card" style="min-height:84px;">
+            <div class="edu-direito-icon">🗳️</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Direitos e deveres do cidadão</div>
+              <div class="edu-direito-desc">Explique o que todo cidadão pode exigir do governo e também o que precisa cumprir, como votar, participar da comunidade e respeitar regras que garantem convivência saudável.</div>
+            </div>
+          </article>
+
+          <article class="edu-direito-card" style="min-height:84px;">
+            <div class="edu-direito-icon">🤝</div>
+            <div class="edu-direito-body">
+              <div class="edu-direito-title">Como debater com respeito</div>
+              <div class="edu-direito-desc">Mostre que discutir política não precisa virar briga. Ensine a ouvir opiniões diferentes, manter calma e focar em ideias, não em ataques. Isso fortalece convivência e evita conflitos desnecessários.</div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Configurações de acessibilidade -->
+    <section id="screen-accessibility" class="screen" aria-label="Acessibilidade">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Acessibilidade</h1>
+      </div>
+      <div class="screen-content">
+        <div class="setting-row">
+          <span class="setting-label">Tamanho da letra</span>
+          <div class="setting-actions">
+            <button class="btn-secondary btn-small" id="font-small">A-</button>
+            <button class="btn-secondary btn-small" id="font-normal">A</button>
+            <button class="btn-secondary btn-small" id="font-big">A+</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Narração automática</span>
+          <button class="toggle" id="toggle-tts">
+            <span class="toggle-knob"></span>
+          </button>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Modo visão cansada</span>
+          <button class="toggle" id="toggle-tired">
+            <span class="toggle-knob"></span>
+          </button>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Modo toque único</span>
+          <button class="toggle" id="toggle-single-touch">
+            <span class="toggle-knob"></span>
+          </button>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Contraste alto</span>
+          <button class="toggle" id="toggle-contrast">
+            <span class="toggle-knob"></span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tela de atividades intergeracionais / comunidade -->
+    <section id="screen-community" class="screen" aria-label="Participação social intergeracional">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Comunidade 60+ DIGITAL</h1>
+      </div>
+      <div class="screen-content">
+        <div class="section-title">Atividades jovens–idosos</div>
+        <div class="list-simple">
+          <button class="list-item" data-nav="programa-cidadao">
+            💻 Oficina “Idoso Tech”
+            <span class="list-item-sub">Encontros presenciais para aprender com jovens.</span>
+          </button>
+          <button class="list-item">
+            🎥 Vídeo: Netos ensinando avós
+            <span class="list-item-sub">Histórias reais e dicas simples.</span>
+          </button>
+        </div>
+        <div class="section-title">Chat seguro</div>
+        <p class="screen-text">
+          Espaço moderado com mediadores. Conversas sobre tecnologia, saúde e direitos.
+        </p>
+        <button class="btn-primary btn-large">
+          Participar da atividade
+        </button>
+      </div>
+      <nav class="bottom-nav">
+        <button class="bottom-nav-btn" data-nav="home">
+          🏠
+          <span>Início</span>
+        </button>
+        <button class="bottom-nav-btn" data-nav="fake-library">
+          📰
+          <span>Fake News</span>
+        </button>
+        <button class="bottom-nav-btn bottom-nav-btn-active" data-nav="community">
+          🤝
+          <span>Comunidade</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- Tela de alertas de segurança -->
+    <section id="screen-alerts" class="screen" aria-label="Alertas de segurança">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Alertas de segurança</h1>
+      </div>
+      <div class="screen-content">
+        <!-- NEW: strong header with icon and background -->
+        <div class="alerts-header" role="region" aria-label="Cabeçalho de alertas">
+          <div class="alerts-header-left">🚨</div>
+          <div class="alerts-header-body">
+            <div class="alerts-header-title">Alertas de segurança</div>
+            <div class="alerts-header-sub">Informações importantes para proteger você de golpes e fraudes.</div>
+          </div>
+        </div>
+
+        <!-- NEW: list of alert cards -->
+        <div class="alert-list">
+          <div class="alert-item alert-item-warning">
+            <div class="alert-emoji">🚨</div>
+            <div class="alert-content">
+              <div class="alert-item-title">Nunca informe códigos de SMS</div>
+              <div class="alert-item-text">Nunca diga seu código de SMS para ninguém, nem para “suporte técnico”.</div>
+            </div>
+          </div>
+
+          <div class="alert-item alert-item-danger">
+            <div class="alert-emoji">❌</div>
+            <div class="alert-content">
+              <div class="alert-item-title">Banco não pede código</div>
+              <div class="alert-item-text">O banco nunca pede senha ou código por WhatsApp ou mensagem.</div>
+            </div>
+          </div>
+
+          <div class="alert-item alert-item-danger">
+            <div class="alert-emoji">❌</div>
+            <div class="alert-content">
+              <div class="alert-item-title">Cuidado com links e promessas</div>
+              <div class="alert-item-text">Não clique em links com promessa de “prêmio” ou “benefício urgente”.</div>
+            </div>
+          </div>
+
+          <div class="alert-item alert-item-ok">
+            <div class="alert-emoji">✅</div>
+            <div class="alert-content">
+              <div class="alert-item-title">Peça ajuda antes de agir</div>
+              <div class="alert-item-text">Em dúvida, fale comigo antes de responder ou compartilhar algo.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- NEW: Fale Comigo box -->
+        <button class="talk-to-me" data-nav="chat-voice" aria-label="Fale comigo — abrir chat de voz">
+          <div class="talk-emoji">🤖</div>
+          <div class="talk-body">
+            <div class="talk-title">Fale Comigo</div>
+            <div class="talk-text">Em dúvida, toque aqui para me perguntar.</div>
+          </div>
+        </button>
+      </div>
+    </section>
+
+    <!-- Tela de ligações e contatos rápidos -->
+    <section id="screen-contacts" class="screen" aria-label="Ligações e contatos rápidos">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Ligações rápidas</h1>
+      </div>
+      <div class="screen-content">
+        <div class="list-simple">
+          <button class="list-item">
+            👨‍👩‍👧 Família
+            <span class="list-item-sub">Filho / Filha / Neto(a)</span>
+          </button>
+          <button class="list-item">
+            🏥 Saúde
+            <span class="list-item-sub">Posto de saúde / Médico</span>
+          </button>
+          <button class="list-item">
+            👮 Segurança
+            <span class="list-item-sub">Polícia / Defesa civil</span>
+          </button>
+        </div>
+        <button class="btn-primary btn-large">
+          📞 Fazer ligação com ajuda da IA
+        </button>
+      </div>
+      <nav class="bottom-nav">
+        <button class="bottom-nav-btn" data-nav="home">
+          🏠
+          <span>Início</span>
+        </button>
+        <button class="bottom-nav-btn" data-nav="fake-library">
+          📰
+          <span>Fake News</span>
+        </button>
+        <button class="bottom-nav-btn bottom-nav-btn-active" data-nav="contacts">
+          📞
+          <span>Ligações</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- Tela de ajuda emergencial -->
+    <section id="screen-emergency" class="screen" aria-label="Ajuda emergencial">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Ajuda emergencial</h1>
+      </div>
+      <div class="screen-content">
+        <div class="emergency-main">
+          <button class="btn-emergency-large">
+            🚨 Ligar para emergência 190
+          </button>
+          <button class="btn-primary btn-large">
+            📞 Ligar para contato de confiança
+          </button>
+        </div>
+        <p class="screen-text">
+          Em situação de perigo, peça ajuda para alguém próximo e use estes botões.
+        </p>
+      </div>
+      <nav class="bottom-nav">
+        <button class="bottom-nav-btn" data-nav="home">
+          🏠
+          <span>Início</span>
+        </button>
+        <button class="bottom-nav-btn" data-nav="fake-library">
+          📰
+          <span>Fake News</span>
+        </button>
+        <button class="bottom-nav-btn bottom-nav-btn-active" data-nav="emergency">
+          🚨
+          <span>Ajuda</span>
+        </button>
+      </nav>
+    </section>
+
+    <!-- NEW SCREEN: Bloquear links suspeitos -->
+    <section id="screen-block-links" class="screen" aria-label="Bloquear links suspeitos">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Bloquear links suspeitos</h1>
+      </div>
+      <div class="screen-content" style="overflow-y:auto; -webkit-overflow-scrolling:touch;">
+        <p class="screen-text">
+          Cole aqui um link que você recebeu para eu verificar e, se quiser, autorize o app a bloquear automaticamente links suspeitos.
+        </p>
+
+        <div class="detector-card" style="max-width:720px; margin: 8px auto;">
+          <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+            <button id="btn-block-paste" class="detector-action detector-action-inline">Colar link</button>
+            <button id="btn-block-check" class="btn-primary" style="min-width:160px;">Verificar agora</button>
+          </div>
+          <input id="block-link-input" class="detector-input" type="url" placeholder="Cole o link do site aqui" />
+          <div class="detector-sub" style="margin-top:8px;">Cole o link ou use o botão Colar para facilitar.</div>
+        </div>
+
+        <div class="detector-card" style="max-width:720px; margin: 8px auto; display:flex; flex-direction:column; gap:12px;">
+          <label style="display:flex; gap:12px; align-items:center;">
+            <input id="block-auto-checkbox" type="checkbox" />
+            <div style="display:flex; flex-direction:column;">
+              <strong>Autorizar bloqueio automático</strong>
+              <span class="detector-sub">Quando ativado, o app pode bloquear ou avisar automaticamente sobre links suspeitos.</span>
+            </div>
+          </label>
+
+          <div style="display:flex; gap:8px;">
+            <button id="btn-block-save" class="btn-primary btn-large">Salvar preferência</button>
+            <button id="btn-block-cancel" class="btn-secondary btn-large" data-nav="home">Cancelar</button>
+          </div>
+        </div>
+
+        <div id="block-status" class="detector-card" style="max-width:720px; margin: 8px auto; display:none;">
+          <div class="see-section-title">Resultado</div>
+          <div id="block-status-text" class="screen-text" style="margin-top:6px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW SCREEN: Programa Cidadão Tech 60+ -->
+    <section id="screen-programa-cidadao" class="screen" aria-label="Programa Cidadão Tech 60+">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="community" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Programa Cidadão Tech 60+</h1>
+      </div>
+      <div class="screen-content" style="overflow-y:auto; -webkit-overflow-scrolling:touch; padding:24px;">
+        <button id="btn-programa-inscrever" class="btn-primary btn-large" style="margin-bottom:12px;" onclick="window.open('https://forms.gle/VERzWodfVnzDCdf2A', '_blank', 'noopener')">
+          Inscrever-se no Curso Cidadão Tech 60+
+        </button>
+        <p class="screen-text" style="font-size:20px; margin-bottom:12px;">
+          O Programa Cidadão Tech 60+ promove cidadania digital para pessoas com mais de 60 anos, oferecendo cursos gratuitos de letramento digital, segurança online e uso seguro de aplicativos e redes sociais. A iniciativa é da Secretaria de Ciência, Tecnologia e Inovação em parceria com Goiás Social.
+        </p>
+
+        <div class="detector-card" style="max-width:720px; margin: 8px auto;">
+          <img src="programa-cidadao.png" alt="Idosos em sala de aula usando tablets e celulares, com jovens instrutores auxiliando" style="width:100%; height:auto; border-radius:12px; display:block;" />
+        </div>
+
+        <div class="detector-card" style="max-width:760px; margin:12px auto; padding:16px;">
+          <div class="see-section-title">Como funciona</div>
+          <ul style="text-align:left; margin-top:10px; padding-left:20px; font-size:18px; line-height:1.5;">
+            <li>Cursos de 60 horas, presenciais, gratuitos, em cinco cidades piloto: Catalão, Goiânia, Mineiros, Santo Antônio do Descoberto e Senador Canedo (2024).</li>
+            <li>Aprendizado sobre aplicativos bancários, transporte, localização, redes sociais e prevenção contra golpes digitais.</li>
+            <li>Prioridade para pessoas com vulnerabilidade socioeconômica e inscritas no CadÚnico.</li>
+          </ul>
+        </div>
+
+        <div class="detector-card" style="max-width:760px; margin:12px auto; padding:16px;">
+          <div class="see-section-title">Dados resumidos</div>
+          <p style="margin-top:10px; font-size:16px; line-height:1.45;">
+            <strong>2024:</strong> 377 matrículas, 301 concluintes, 12 turmas, 5 cidades.<br/>
+            <strong>2025:</strong> 932 matrículas, 24 turmas, 21 cidades atendidas.
+          </p>
+        </div>
+
+        <div class="detector-card" style="max-width:760px; margin:12px auto; padding:16px;">
+          <div class="see-section-title">Inscrições e contato</div>
+          <p style="margin-top:10px; font-size:16px; line-height:1.45;">
+            Divulgação: redes sociais Secti (Instagram, Facebook, TikTok), site e imprensa.<br/>
+            WhatsApp para dúvidas: <strong>61 3559-1111</strong><br/>
+            Responsável: Fabíola Ariadne Rodrigues Oliveira, Gerente de Inclusão Digital – <a href="mailto:gate.secti@goias.gov.br">gate.secti@goias.gov.br</a> | (62) 3269-4270
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Floating accessibility button + popup (appears in all screens except splash) -->
+  <div id="acc-float" class="acc-float" aria-hidden="false">
+    <button id="acc-float-btn" class="acc-float-btn" aria-label="Acessibilidade: abrir opções de narração" title="Acessibilidade">
+      🔊
+    </button>
+    <div id="acc-popup" class="acc-popup" role="dialog" aria-label="Opções de acessibilidade" hidden>
+      <div class="acc-popup-actions">
+        <button id="acc-enable" class="btn-primary btn-large">Ativar narração</button>
+        <button id="acc-disable" class="btn-secondary btn-large">Desativar narração</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
