@@ -23,6 +23,7 @@ const SCREENS = [
   "block-links", // added new screen id
   "programa-cidadao", // nova tela Programa Cidadão Tech 60+
   "avatar-ze", // new conditional informational screen for Zé
+  "boleto-pix", // new boleto/pix safety screen
 ];
 
 const state = {
@@ -108,7 +109,8 @@ function announceScreen(screenId) {
     emergency: "Ajuda emergencial.",
     "block-links": "Bloquear links suspeitos. Cole um link e autorize bloqueio automático se desejar.",
     "programa-cidadao": "Programa Cidadão Tech 60+. Informações sobre cursos, inscrições e contato.",
-    "avatar-ze": "Você pode falar comigo a qualquer momento, dizendo “Oi Zé”. Use sua voz para pedir ajuda rápida ou perguntar sobre mensagens e links. Se quiser, toque em continuar para permitir que seu assistente ajude no celular. Continuar. Pular"
+    "avatar-ze": "Você pode falar comigo a qualquer momento, dizendo “Oi Zé”. Use sua voz para pedir ajuda rápida ou perguntar sobre mensagens e links. Se quiser, toque em continuar para permitir que seu assistente ajude no celular. Continuar. Pular",
+    "boleto-pix": "Nesta área você pode verificar boletos e PIX antes de fazer qualquer pagamento. Sempre diga ‘Oi Zé’ para pedir ajuda e conferir se o boleto ou PIX é real."
   };
   if ("speechSynthesis" in window) window.speechSynthesis.cancel();
   if (!state.ttsOn) return;
@@ -886,7 +888,7 @@ function speakActionForElement(el) {
     "enviar-pre": "Enviando mensagem pré-definida para o contato selecionado.",
     "abrir-apps": "Abrindo a lista de aplicativos.",
     "ajustar-volume": "Ajustando o volume do celular.",
-    "modo-silencioso": "Ativando modo silencioso.",
+    "modo-silencioso": "Colocando no silencioso.",
     "ajustar-brilho": "Ajustando o brilho da tela.",
     "bloquear-links": "Bloqueando links suspeitos e avisando você.",
     "guia-passo": "Vou guiar você passo a passo. Toque no botão indicado quando aparecer.",
@@ -1202,6 +1204,112 @@ function initChatVoice() {
   });
 }
 
+// NEW: init for Boleto/Pix screen
+function initBoletoPix() {
+  const uploadBtn = document.getElementById("btn-boleto-upload");
+  const fileInput = document.getElementById("boleto-file-input");
+  const pasteBtn = document.getElementById("btn-boleto-paste");
+  const pasteInput = document.getElementById("boleto-paste-input");
+  const verifyBtn = document.getElementById("btn-boleto-verify");
+  const resultCard = document.getElementById("boleto-result");
+  const resultText = document.getElementById("boleto-result-text");
+
+  if (!verifyBtn) return;
+
+  let verificationCount = 0;
+  let lastSubmission = null;
+
+  // open file picker
+  uploadBtn && uploadBtn.addEventListener("click", () => {
+    fileInput && fileInput.click();
+  });
+
+  if (fileInput) {
+    fileInput.addEventListener("change", (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (!f) return;
+      lastSubmission = { type: "file", name: f.name };
+      resultCard.style.display = "block";
+      resultText.textContent = `Arquivo carregado: ${f.name}`;
+      tts.speak("Arquivo recebido. Toque em verificar agora para analisar.");
+    });
+  }
+
+  // paste action reads clipboard or focuses input
+  pasteBtn && pasteBtn.addEventListener("click", async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        pasteInput.value = text;
+        lastSubmission = { type: "text", content: text };
+        resultCard.style.display = "block";
+        resultText.textContent = `Conteúdo colado: ${text.slice(0, 120)}`;
+        tts.speak("Conteúdo colado. Toque em verificar agora para analisar.");
+        return;
+      }
+    } catch (e) {
+      // ignore and focus
+    }
+    pasteInput.focus();
+    tts.speak("Cole a chave PIX ou o texto do boleto no campo.");
+  });
+
+  verifyBtn.addEventListener("click", async () => {
+    verificationCount += 1;
+    // first verification: quick read simulation
+    if (verificationCount === 1) {
+      resultCard.style.display = "block";
+      resultText.textContent = "Lendo boleto/PIX...";
+      tts.speak("Lendo boleto ou PIX...");
+      // small delay to simulate read
+      await new Promise((r) => setTimeout(r, 900));
+      resultText.textContent = "Leitura inicial concluída. Toque em Verificar agora novamente para análise completa.";
+      tts.speak("Leitura inicial concluída. Toque em Verificar agora novamente para análise completa.");
+      return;
+    }
+
+    // second+ verification: full simulation
+    resultCard.style.display = "block";
+    resultText.textContent = "Analisando dados...";
+    tts.speak("Analisando dados...");
+    // simulate processing
+    await new Promise((r) => setTimeout(r, 1200));
+
+    // simple simulated heuristic: if pasted text/file name contains suspicious keywords mark as risky
+    const suspectPattern = /(teste|suspeito|golpe|fraude|temporario|transferencia)/i;
+    let suspicious = false;
+    if (lastSubmission) {
+      const field = (lastSubmission.name || "") + " " + (lastSubmission.content || "");
+      suspicious = suspectPattern.test(field) || (pasteInput && /[^\dA-Za-z]/.test(pasteInput.value) && pasteInput.value.length < 8 && pasteInput.value.includes("000"));
+    } else {
+      // if nothing submitted, randomize outcome for demo
+      suspicious = Math.random() < 0.33;
+    }
+
+    if (suspicious) {
+      resultText.innerHTML = `<strong>Atenção:</strong> Há inconsistências. Pode ser golpe.`;
+      tts.speak("Atenção: Há inconsistências. Pode ser golpe.");
+    } else {
+      resultText.innerHTML = `<strong>Resultado:</strong> Este boleto/PIX parece SEGURO.`;
+      tts.speak("Resultado: Este boleto ou PIX parece seguro.");
+    }
+  });
+
+  // speak the full guidance when entering the screen (ensure TTS respects chosen avatar)
+  const screenEl = document.getElementById("screen-boleto-pix");
+  if (screenEl) {
+    const obs = new MutationObserver((mut) => {
+      if (screenEl.classList.contains("screen-active")) {
+        // short explicit narration required by user (respecting state.ttsOn)
+        if (state.ttsOn) {
+          tts.speak("Nesta área você pode verificar boletos e PIX antes de fazer qualquer pagamento. Sempre diga ‘Oi Zé’ para pedir ajuda e conferir se o boleto ou PIX é real.");
+        }
+      }
+    });
+    obs.observe(document.getElementById("app-root"), { subtree: true, attributes: true, attributeFilter: ["class"] });
+  }
+}
+
 function bootstrap() {
   applyAvatar();
   applyFontScale();
@@ -1219,6 +1327,7 @@ function bootstrap() {
   initFloatingAcc();
   initBlockLinks(); // initialize block-links screen handlers
   initChatVoice(); // initialize voice press-and-hold simulation
+  initBoletoPix(); // initialize boleto/pix handlers
   // Auto-narration splash
   announceScreen("splash");
 }

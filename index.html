@@ -173,6 +173,12 @@
 
                 <!-- nova lista vertical: um botão por linha -->
                 <div class="security-list">
+                  <button class="security-item" data-nav="boleto-pix" id="btn-boleto-pix">
+                    <div class="card-icon">🔐</div>
+                    <div class="card-text">Boleto e PIX Seguro</div>
+                    <div style="width:100%; font-size:14px; color:#555; margin-top:6px;">Verifique boletos e PIX antes de pagar.</div>
+                  </button>
+
                   <button class="security-item" data-nav="fake-detector">
                     <div class="card-icon">🌐</div>
                     <div class="card-text">Checar notícia</div>
@@ -1266,6 +1272,74 @@
             WhatsApp para dúvidas: <strong>61 3559-1111</strong><br/>
             Responsável: Fabíola Ariadne Rodrigues Oliveira, Gerente de Inclusão Digital – <a href="mailto:gate.secti@goias.gov.br">gate.secti@goias.gov.br</a> | (62) 3269-4270
           </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- NEW SCREEN: Boleto e PIX Seguro -->
+    <section id="screen-boleto-pix" class="screen" aria-label="Boleto e PIX Seguro">
+      <div class="screen-header">
+        <button class="btn-ghost header-back" data-nav="home" aria-label="Voltar">
+          ◀
+        </button>
+        <h1 class="screen-title">Boleto e PIX Seguro</h1>
+      </div>
+      <div class="screen-content" style="overflow-y:auto; -webkit-overflow-scrolling:touch; padding:22px;">
+        <p class="screen-text" style="font-size:20px; margin-bottom:12px;">
+          Use a IA para conferir se o pagamento é verdadeiro antes de pagar.
+        </p>
+
+        <div class="detector-card" style="max-width:720px; margin:8px auto;">
+          <img src="boleto-pix.png" alt="Ilustração de um celular escaneando boleto e QR Code PIX com ícones de cadeado, escudo e alerta" style="width:100%; max-width:520px; height:auto; border-radius:12px; display:block; margin:0 auto;" />
+        </div>
+
+        <div style="max-width:760px; margin:12px auto; display:flex; flex-direction:column; gap:14px;">
+          <div class="detector-card">
+            <div class="see-section-title">Boleto Seguro</div>
+            <ul style="margin-top:8px; padding-left:18px; font-size:17px; line-height:1.5;">
+              <li>• Lê o boleto automaticamente</li>
+              <li>• Confere CNPJ</li>
+              <li>• Confere banco emissor</li>
+              <li>• Confere valor</li>
+              <li>• Compara com histórico de golpes conhecidos</li>
+            </ul>
+          </div>
+
+          <div class="detector-card">
+            <div class="see-section-title">PIX Seguro</div>
+            <ul style="margin-top:8px; padding-left:18px; font-size:17px; line-height:1.5;">
+              <li>• A IA lê o QR Code</li>
+              <li>• Analisa nome do recebedor</li>
+              <li>• Detecta divergências no CPF/CNPJ</li>
+              <li>• Gera alerta em voz, se houver risco</li>
+            </ul>
+          </div>
+
+          <!-- Updated: make Upload and Paste rows stacked for better spacing and readability -->
+          <div class="detector-card" style="display:flex; flex-direction:column; gap:10px; align-items:stretch;">
+            <label style="font-weight:800; font-size:16px;">Enviar boleto / colar chave PIX</label>
+            <input id="boleto-file-input" type="file" accept="image/*,application/pdf" hidden />
+            <!-- First row: Enviar arquivo -->
+            <div style="display:flex; gap:8px; align-items:center;">
+              <button id="btn-boleto-upload" class="btn-secondary" style="min-width:140px;">Enviar arquivo</button>
+              <div style="flex:1;"></div>
+            </div>
+            <!-- Second row: Colar chave / link + input -->
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <button id="btn-boleto-paste" class="detector-action detector-action-inline">Colar chave / link</button>
+              <input id="boleto-paste-input" class="detector-input" type="text" placeholder="Cole aqui chave PIX, link ou texto do boleto" style="flex:1; min-width:160px;" />
+            </div>
+            <div class="detector-sub">Área para enviar imagem do boleto, PDF ou colar chave PIX/conteúdo.</div>
+          </div>
+
+          <div class="detector-card" style="display:flex; gap:8px; align-items:center; justify-content:space-between;">
+            <button id="btn-boleto-verify" class="btn-primary btn-large" style="width:100%;">Verificar agora</button>
+          </div>
+
+          <div id="boleto-result" class="detector-card" style="display:none;">
+            <div class="see-section-title">Resultado</div>
+            <div id="boleto-result-text" style="margin-top:8px; font-size:16px; color:#333;"></div>
+          </div>
         </div>
       </div>
     </section>
